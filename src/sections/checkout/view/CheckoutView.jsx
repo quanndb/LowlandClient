@@ -90,6 +90,7 @@ const ProductTable = ({ products }) => {
 };
 
 const SubmitOrder = ({ data, setOpen, userData, setOrderId }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [order, setOrder] = useState({
     customerName: userData.customerName,
@@ -123,6 +124,7 @@ const SubmitOrder = ({ data, setOpen, userData, setOrderId }) => {
   };
 
   const handleOrder = () => {
+    setIsLoading(true);
     orderAPI
       .createOrder(order)
       .then((res) => {
@@ -133,93 +135,103 @@ const SubmitOrder = ({ data, setOpen, userData, setOrderId }) => {
       })
       .catch((err) => {
         toast.error(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
   return (
-    <Grid
-      container
-      sx={{
-        justifyContent: "space-between",
-      }}
-    >
-      <Grid item sm={6}>
-        <Box sx={{ display: "flex", alignItems: "end" }}>
-          <Typography sx={{ fontWeight: "600", fontSize: "20px", mr: 3 }}>
-            Message:
+    <>
+      <Grid
+        container
+        sx={{
+          justifyContent: "space-between",
+        }}
+      >
+        <Grid item sm={6}>
+          <Box sx={{ display: "flex", alignItems: "end" }}>
+            <Typography sx={{ fontWeight: "600", fontSize: "20px", mr: 3 }}>
+              Message:
+            </Typography>
+            <TextField
+              label="Message for us"
+              variant="standard"
+              value={order.message}
+              onChange={(e) => setOrder({ ...order, message: e.target.value })}
+            />
+          </Box>
+          <Typography sx={{ mt: 2, fontSize: "14px" }}>
+            Clicking "Order" means you agree to our{" "}
+            <Typography component={"a"} color={"secondary"} href="#">
+              Terms & Conditions.
+            </Typography>
           </Typography>
-          <TextField
-            label="Message for us"
-            variant="standard"
-            value={order.message}
-            onChange={(e) => setOrder({ ...order, message: e.target.value })}
-          />
-        </Box>
-        <Typography sx={{ mt: 2, fontSize: "14px" }}>
-          Clicking "Order" means you agree to our{" "}
-          <Typography component={"a"} color={"secondary"} href="#">
-            Terms & Conditions.
-          </Typography>
-        </Typography>
-      </Grid>
-      <Grid item sm={4} xs={12} sx={{ mt: 3 }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontSize: "20px", mr: 3 }}>Subtotal</Typography>
-          <Typography textAlign={"right"}>
-            {formatPrice(caculateSubtotal())}
-            <sup>₫</sup>
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            mt: 1,
-            justifyContent: "space-between",
-          }}
-        >
-          <Typography sx={{ fontSize: "20px", mr: 3 }}>Tax (10%)</Typography>
-          <Typography textAlign={"right"}>
-            {formatPrice(caculateTax())}
-            <sup>₫</sup>
-          </Typography>
-        </Box>
-        <Divider sx={{ my: 1, borderBottomWidth: "2px" }} />
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            mt: 1,
-            justifyContent: "space-between",
-          }}
-        >
-          <Typography sx={{ fontSize: "20px", mr: 3 }}>Total</Typography>
-          <Typography
-            textAlign={"right"}
-            color={"secondary"}
-            sx={{ fontWeight: "600", fontSize: "20px" }}
+        </Grid>
+        <Grid item sm={4} xs={12} sx={{ mt: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
           >
-            {formatPrice(caculateSubtotal() + caculateTax())}
-            <sup>₫</sup>
-          </Typography>
-        </Box>
-        <Button
-          color="secondary"
-          variant="contained"
-          sx={{ my: 2, width: "100%" }}
-          onClick={handleOrder}
-        >
-          Order
-        </Button>
+            <Typography sx={{ fontSize: "20px", mr: 3 }}>Subtotal</Typography>
+            <Typography textAlign={"right"}>
+              {formatPrice(caculateSubtotal())}
+              <sup>₫</sup>
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mt: 1,
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography sx={{ fontSize: "20px", mr: 3 }}>Tax (10%)</Typography>
+            <Typography textAlign={"right"}>
+              {formatPrice(caculateTax())}
+              <sup>₫</sup>
+            </Typography>
+          </Box>
+          <Divider sx={{ my: 1, borderBottomWidth: "2px" }} />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mt: 1,
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography sx={{ fontSize: "20px", mr: 3 }}>Total</Typography>
+            <Typography
+              textAlign={"right"}
+              color={"secondary"}
+              sx={{ fontWeight: "600", fontSize: "20px" }}
+            >
+              {formatPrice(caculateSubtotal() + caculateTax())}
+              <sup>₫</sup>
+            </Typography>
+          </Box>
+          <Button
+            color="secondary"
+            variant="contained"
+            sx={{ my: 2, width: "100%" }}
+            onClick={handleOrder}
+          >
+            Order
+          </Button>
+        </Grid>
       </Grid>
-    </Grid>
+      <Dialog open={isLoading}>
+        <Box sx={{ p: 3 }}>
+          <CircularProgress />
+        </Box>
+      </Dialog>
+    </>
   );
 };
 
