@@ -26,6 +26,9 @@ import Image from "src/components/Image";
 import payAPI from "src/services/API/payAPI";
 import { set } from "lodash";
 import { useRouter } from "src/routes/hooks";
+import { useDispatch, useSelector } from "react-redux";
+import LoadingManagerSlice from "src/redux/slices/LoadingManagerSlice";
+import { loading } from "src/redux/selectors/LoadingSelector";
 
 const ProductTable = ({ products }) => {
   return (
@@ -86,6 +89,7 @@ const ModalContent = ({
   updateOrder,
   setIsLoading,
 }) => {
+  const dispatch = useDispatch();
   const [updatedOrder, setUpdatedOrder] = useState({
     orderId: "",
     orderCode: "",
@@ -105,6 +109,7 @@ const ModalContent = ({
   const router = useRouter();
   useEffect(() => {
     if (open) {
+      dispatch(LoadingManagerSlice.actions.setLoading(true));
       orderAPI
         .getOrderDetails(order)
         .then((res) => {
@@ -125,7 +130,8 @@ const ModalContent = ({
             items: res.items ? res.items : [],
           });
         })
-        .catch((error) => toast.error(error));
+        .catch((error) => toast.error(error))
+        .finally(() => dispatch(LoadingManagerSlice.actions.setLoading(false)));
     }
   }, [order]);
 
@@ -353,7 +359,7 @@ const ModalContent = ({
 
 const UpdateModal = ({ open, handleClose, order, orderList, updateOrder }) => {
   const [isLoading, setIsLoading] = useState(false);
-
+  const loadingState = useSelector(loading);
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="xl">
       {isLoading ? (

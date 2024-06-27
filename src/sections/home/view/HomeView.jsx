@@ -10,11 +10,18 @@ import { PRODUCTS } from "src/mock/itemProduct";
 import { useEffect, useState } from "react";
 import productAPI from "src/services/API/productAPI";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import LoadingManagerSlice from "src/redux/slices/LoadingManagerSlice";
+import { loading } from "src/redux/selectors/LoadingSelector";
+import InnerLoading from "src/components/InnerLoading";
 
 const HomeView = () => {
+  const dispath = useDispatch();
   const [products, setProducts] = useState([]);
+  const isLoading = useSelector(loading);
 
   useEffect(() => {
+    dispath(LoadingManagerSlice.actions.setLoading(true));
     productAPI
       .getAll({
         productId: 0,
@@ -25,7 +32,8 @@ const HomeView = () => {
       })
       .catch((err) => {
         toast.error(err);
-      });
+      })
+      .finally(() => dispath(LoadingManagerSlice.actions.setLoading(false)));
   }, []);
 
   return (
@@ -34,9 +42,9 @@ const HomeView = () => {
       <HomeStory />
 
       <SectionTitle>FEATURED MUGS</SectionTitle>
-      <SwiperProducts list={products} />
+      {isLoading ? <InnerLoading /> : <SwiperProducts list={products} />}
       <SectionTitle>MORE PRODUCTS</SectionTitle>
-      <AllProducts products={products} />
+      {isLoading ? <InnerLoading /> : <AllProducts products={products} />}
       <HomeMagazine />
 
       <ShowCase imageURL={"/static/images/showCase.jpg"} />

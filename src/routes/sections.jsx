@@ -8,6 +8,7 @@ import { fetchProductById } from "./loaders/productLoader";
 import DetailProductPage from "src/pages/detaill-product";
 import UserPage from "src/pages/UserPage";
 import DefaultLayout from "src/layouts/defaultLayout";
+import LoadingComp from "src/components/LoadingComp";
 
 const ProtectedRoute = lazy(() => import("./ProtectedRoute"));
 const HomePage = lazy(() => import("src/pages/home"));

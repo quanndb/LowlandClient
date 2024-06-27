@@ -4,11 +4,15 @@ import { PRODUCTS } from "src/mock/itemProduct.js";
 import { useEffect, useState } from "react";
 import productAPI from "src/services/API/productAPI";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import LoadingManagerSlice from "src/redux/slices/LoadingManagerSlice";
 
 const ProductsPage = () => {
+  const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+    dispatch(LoadingManagerSlice.actions.setLoading(true));
     productAPI
       .getAll({
         productId: 0,
@@ -19,7 +23,8 @@ const ProductsPage = () => {
       })
       .catch((err) => {
         toast.error(err);
-      });
+      })
+      .finally(() => dispatch(LoadingManagerSlice.actions.setLoading(false)));
   }, []);
 
   return (

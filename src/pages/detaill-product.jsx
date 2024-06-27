@@ -7,11 +7,15 @@ import { useScrollToTop } from "src/hooks/use-scroll-to-top";
 import { useEffect, useState } from "react";
 import productAPI from "src/services/API/productAPI";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import LoadingManagerSlice from "src/redux/slices/LoadingManagerSlice";
 const DetailProductPage = () => {
   const product = useLoaderData();
+  const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+    dispatch(LoadingManagerSlice.actions.setLoading(true));
     productAPI
       .getAll({
         productId: 0,
@@ -22,7 +26,8 @@ const DetailProductPage = () => {
       })
       .catch((err) => {
         toast.error(err);
-      });
+      })
+      .finally(() => dispatch(LoadingManagerSlice.actions.setLoading(false)));
   }, []);
   useScrollToTop();
 

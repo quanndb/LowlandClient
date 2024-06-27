@@ -17,8 +17,13 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useSelector } from "react-redux";
+import { loading } from "src/redux/selectors/LoadingSelector";
+import { is } from "date-fns/locale";
+import InnerLoading from "src/components/InnerLoading";
 
 const ProductsMain = ({ products }) => {
+  const isLoading = useSelector(loading);
   const [active, setActive] = useState(0);
   const [menu, setMenu] = useState("All products");
 
@@ -123,7 +128,11 @@ const ProductsMain = ({ products }) => {
       </Container>
 
       {/* search + select option */}
-      <AllProducts products={paginatedProducts()} />
+      {isLoading ? (
+        <InnerLoading />
+      ) : (
+        <AllProducts products={paginatedProducts()} />
+      )}
 
       {/* Pagination Controls */}
       <Box

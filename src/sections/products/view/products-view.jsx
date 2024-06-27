@@ -2,12 +2,10 @@ import ProductsMain from "./products-main";
 import { useDispatch } from "react-redux";
 import { categories } from "src/mock/categories";
 
-const ProductsView = ({products}) => {
-  const dispatch = useDispatch();
-  console.log();
+const ProductsView = ({ products }) => {
   return (
     <>
-      <ProductsMain categories={categories} products={products}/>
+      <ProductsMain categories={categories} products={products} />
     </>
   );
 };
